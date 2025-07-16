@@ -61,4 +61,17 @@ function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\Entit
         'link' => $link,
         '#weight' => 100,
     ];
+
+    $follower_count = $manager->countFollowers($account->id());
+    $following_count = $manager->countFollowing($account->id());
+
+    $build['coterie_relationship_counts'] = [
+        '#markup' => t('<div class="relationship-counts">
+    <strong>@followers</strong> Followers | <strong>@following</strong> Following
+    </div>', [
+            '@followers' => $follower_count,
+            '@following' => $following_count,
+        ]),
+        '#weight' => 101,
+    ];
 }

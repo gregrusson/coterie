@@ -75,4 +75,28 @@ class RelationshipManager {
         }
         return $followers;
     }
+
+    /**
+     * Count how many users are following the given user.
+     */
+    public function countFollowers(int $uid): int {
+        $storage = $this->entityTypeManager->getStorage('relationship');
+        $relationships = $storage->loadByProperties([
+                                                        'type' => 'follower',
+                                                        'target_user' => $uid,
+                                                    ]);
+        return count($relationships);
+    }
+
+    /**
+     * Count how many users the given user is following.
+     */
+    public function countFollowing(int $uid): int {
+        $storage = $this->entityTypeManager->getStorage('relationship');
+        $relationships = $storage->loadByProperties([
+                                                        'type' => 'follower',
+                                                        'source_user' => $uid,
+                                                    ]);
+        return count($relationships);
+    }
 }
