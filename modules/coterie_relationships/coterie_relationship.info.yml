@@ -1,0 +1,7 @@
+name: 'Coterie: Relationships'
+type: module
+description: 'Provides Coterie user relationships.'
+core_version_requirement: ^11
+package: Coterie
+dependencies:
+  - coterie:coterie
