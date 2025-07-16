@@ -65,4 +65,60 @@ class RelationshipController extends ControllerBase {
 
         return new RedirectResponse('/user/' . $user);
     }
+
+    public function followersPage($user) {
+        $target_user = User::load($user);
+        if (!$target_user) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
+        }
+
+        $manager = \Drupal::service('coterie_relationship.manager');
+        $follower_ids = $manager->getFollowers($target_user->id());
+
+        $follower_users = \Drupal::entityTypeManager()->getStorage('user')->loadMultiple($follower_ids);
+
+        $items = [];
+        foreach ($follower_users as $account) {
+            $items[] = $account->toLink($account->getDisplayName())->toRenderable();
+        }
+
+        return [
+            '#theme' => 'item_list',
+            '#title' => $this->t('Followers of @name', ['@name' => $target_user->getDisplayName()]),
+            '#items' => $items,
+        ];
+    }
+
+    public function followingPage($user) {
+        $source_user = User::load($user);
+        if (!$source_user) {
+            throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
+        }
+
+        $manager = \Drupal::service('coterie_relationship.manager');
+        $storage = \Drupal::entityTypeManager()->getStorage('relationship');
+        $relationships = $storage->loadByProperties([
+                                                        'type' => 'follower',
+                                                        'source_user' => $source_user->id(),
+                                                    ]);
+
+        $target_ids = [];
+        foreach ($relationships as $rel) {
+            $target_ids[] = $rel->get('target_user')->target_id;
+        }
+
+        $target_users = \Drupal::entityTypeManager()->getStorage('user')->loadMultiple($target_ids);
+
+        $items = [];
+        foreach ($target_users as $account) {
+            $items[] = $account->toLink($account->getDisplayName())->toRenderable();
+        }
+
+        return [
+            '#theme' => 'item_list',
+            '#title' => $this->t('@name is following', ['@name' => $source_user->getDisplayName()]),
+            '#items' => $items,
+        ];
+    }
+
 }

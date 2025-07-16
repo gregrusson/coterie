@@ -65,13 +65,19 @@ function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\Entit
     $follower_count = $manager->countFollowers($account->id());
     $following_count = $manager->countFollowing($account->id());
 
+    $followers_url = Url::fromRoute('coterie_relationship.user_followers', ['user' => $account->id()]);
+    $following_url = Url::fromRoute('coterie_relationship.user_following', ['user' => $account->id()]);
+
     $build['coterie_relationship_counts'] = [
-        '#markup' => t('<div class="relationship-counts">
-    <strong>@followers</strong> Followers | <strong>@following</strong> Following
-    </div>', [
-            '@followers' => $follower_count,
-            '@following' => $following_count,
-        ]),
+        '#type' => 'container',
+        '#attributes' => ['class' => ['relationship-counts']],
+        'counts' => [
+            '#markup' => '<strong>' .
+                         Link::fromTextAndUrl(t('@followers Followers', ['@followers' => $follower_count]), $followers_url)->toString() .
+                         '</strong> | <strong>' .
+                         Link::fromTextAndUrl(t('@following Following', ['@following' => $following_count]), $following_url)->toString() .
+                         '</strong>',
+        ],
         '#weight' => 101,
     ];
 }
