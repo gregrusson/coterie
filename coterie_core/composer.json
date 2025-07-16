@@ -1,11 +1,11 @@
 {
-  "name": "drupal/coterie",
+  "name": "drupal/coterie_core",
   "description": "Base functionality and shared services for all Coterie social modules",
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
   "autoload": {
     "psr-4": {
-      "Drupal\\coterie\\": "src/"
+      "Drupal\\coterie_core\\": "src/"
     }
   },
   "extra": {

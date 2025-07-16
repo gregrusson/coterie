@@ -1,4 +1,4 @@
-name: Coterie
+name: 'Coterie: Core'
 type: module
 description: 'Core services, interfaces, and utilities for the Coterie social ecosystem.'
 core_version_requirement: ^11
