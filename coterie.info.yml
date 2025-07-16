@@ -5,8 +5,3 @@ core_version_requirement: ^11
 package: Coterie
 
 # no dependencies here; sub-modules will depend on “coterie”
-dependencies:
-  - coterie.post
-
-themes:
-  - gin

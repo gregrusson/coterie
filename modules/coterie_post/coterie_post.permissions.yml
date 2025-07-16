@@ -1,0 +1,4 @@
+create coterie posts:
+  title: 'Create Coterie Posts'
+  description: 'Allow users to create new Coterie Post content.'
+  restrict: TRUE
