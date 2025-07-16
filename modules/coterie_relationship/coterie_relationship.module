@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 /**
  * Implements hook_help().
@@ -20,14 +22,35 @@ function coterie_relationship_help($route_name, RouteMatchInterface $route_match
 /**
  * Implements hook_user_view().
  */
-function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
-    if ($entity->getEntityTypeId() === 'user' && \Drupal::currentUser()->id() !== $entity->id()) {
-        $url = \Drupal\Core\Url::fromRoute('coterie_relationship.follow_user', ['user' => $entity->id()]);
-        $build['follow_link'] = [
-            '#type' => 'link',
-            '#title' => $entity->get('field_visibility')->value === 'followers' ? 'Request Follow' : 'Follow',
-            '#url' => $url,
-            '#attributes' => ['class' => ['button', 'button--follow']],
-        ];
+function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\EntityInterface $account, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+    // Only modify for actual user profiles, not system accounts.
+    if ($account->getEntityTypeId() !== 'user' || $view_mode !== 'full') {
+        return;
     }
+
+    $current_user = \Drupal::currentUser();
+
+    // Don't show the button to anonymous users or to themselves.
+    if ($current_user->isAnonymous() || $current_user->id() == $account->id()) {
+        return;
+    }
+
+    // Use the RelationshipManager to check if already following.
+    $manager = \Drupal::service('coterie_relationship.manager');
+    $already_following = $manager->isFollower($current_user->id(), $account->id());
+
+    $text = $already_following ? t('Following') : t('Follow');
+    $url = Url::fromRoute('coterie_relationship.follow_user', ['user' => $account->id()]);
+
+    $link = Link::fromTextAndUrl($text, $url)->toRenderable();
+    $link['#attributes']['class'][] = 'button';
+    $link['#attributes']['class'][] = $already_following ? 'is-following' : 'follow-action';
+
+    // Add it to the bottom of the profile.
+    $build['coterie_follow_button'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['follow-button-wrapper']],
+        'link' => $link,
+        '#weight' => 100,
+    ];
 }
