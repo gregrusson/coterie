@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * @file
+ * Install, update and schema hooks for Coterie Post.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function coterie_post_schema() {
+  $schema['coterie_post'] = [
+    'description' => 'Stores Coterie posts.',
+    'fields' => [
+      'id' => [
+        'description' => 'Primary key: Unique post ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uuid' => [
+        'description' => 'Universal unique identifier.',
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ],
+      'title' => [
+        'description' => 'Post title.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'body' => [
+        'description' => 'Long text body.',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+      'author_id' => [
+        'description' => 'UID of author.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'created' => [
+        'description' => 'Timestamp when created.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'changed' => [
+        'description' => 'Timestamp when last changed.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'unique keys' => [
+      'uuid' => ['uuid'],
+    ],
+    'indexes' => [
+      'author_id' => ['author_id'],
+    ],
+  ];
+
+  return $schema;
+}

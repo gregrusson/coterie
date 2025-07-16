@@ -1,0 +1,7 @@
+coterie_post.collection:
+  path: '/admin/content/coterie-post'
+  defaults:
+    _entity_list: 'coterie_post'
+    _title: 'Coterie Posts'
+  requirements:
+    _permission: 'administer coterie_post'

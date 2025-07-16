@@ -1,0 +1,11 @@
+{
+  "name": "drupal/coterie_post",
+  "description": "Coterie: User-generated posts",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "Drupal\\coterie_post\\": "src/"
+    }
+  }
+}

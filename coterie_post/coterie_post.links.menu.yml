@@ -1,0 +1,6 @@
+coterie_post.admin:
+  title: 'Coterie Posts'
+  description: 'Manage all Coterie posts.'
+  route_name: coterie_post.collection
+  parent: system.admin_content
+  menu_name: admin

@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - coterie_post
+id: coterie_post.coterie_post.default
+targetEntityType: coterie_post
+bundle: coterie_post
+mode: default
+content:
+  title:
+    type: string_textfield
+    weight: 0
+  body:
+    type: text_textarea
+    weight: 1
