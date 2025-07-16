@@ -21,9 +21,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   handlers = {
  *     "list_builder" = "Drupal\coterie_post\PostListBuilder",
  *     "form" = {
- *       "default" = "Drupal\coterie_post\Form\PostForm",
+ *       "add"    = "Drupal\coterie_post\Form\PostForm",
+ *       "edit"   = "Drupal\coterie_post\Form\PostForm",
  *       "delete" = "Drupal\Core\Entity\EntityDeleteForm"
- *     }
+ * }
  *   },
  *   links = {
  *     "canonical" = "/post/{coterie_post}",
@@ -34,18 +35,30 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   }
  * )
  */
-class Post extends ContentEntityBase implements PostInterface {
+class Post extends ContentEntityBase implements PostInterface
+{
 
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    public static function baseFieldDefinitions(EntityTypeInterface $entity_type)
+    {
         $fields = parent::baseFieldDefinitions($entity_type);
 
         $fields['title'] = BaseFieldDefinition::create('string')
                                               ->setLabel(t('Title'))
                                               ->setRequired(TRUE)
-                                              ->setSettings(['max_length' => 255]);
+                                              ->setSettings(['max_length' => 255])
+                                              ->setDisplayOptions('form', [
+                                                  'type'   => 'string_textfield',
+                                                  'weight' => 0,
+                                              ])
+                                              ->setDisplayConfigurable('form', TRUE);
 
         $fields['body'] = BaseFieldDefinition::create('text_long')
-                                             ->setLabel(t('Body'));
+                                             ->setLabel(t('Body'))
+                                             ->setDisplayOptions('form', [
+                                                 'type'   => 'text_textarea',
+                                                 'weight' => 1,
+                                             ])
+                                             ->setDisplayConfigurable('form', TRUE);
 
         $fields['author_id'] = BaseFieldDefinition::create('entity_reference')
                                                   ->setLabel(t('Author'))
@@ -61,7 +74,8 @@ class Post extends ContentEntityBase implements PostInterface {
         return $fields;
     }
 
-    public static function getCurrentUserId() {
+    public static function getCurrentUserId()
+    {
         return [\Drupal::currentUser()->id()];
     }
 }

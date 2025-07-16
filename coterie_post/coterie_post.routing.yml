@@ -5,3 +5,10 @@ coterie_post.collection:
     _title: 'Coterie Posts'
   requirements:
     _permission: 'administer coterie_post'
+entity.coterie_post.add_form:
+  path: '/admin/content/coterie-post/add'
+  defaults:
+    _entity_form: 'coterie_post.add'
+    _title: 'Add Coterie post'
+  requirements:
+    _permission: 'create coterie_post entities'

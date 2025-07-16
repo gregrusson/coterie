@@ -1,0 +1,15 @@
+create coterie_post entities:
+  title: 'Create new Coterie posts'
+  description: 'Allow users to create new Coterie posts.'
+
+edit own coterie_post entities:
+  title: 'Edit own Coterie posts'
+  description: 'Allow users to edit their own Coterie posts.'
+
+delete own coterie_post entities:
+  title: 'Delete own Coterie posts'
+  description: 'Allow users to delete their own Coterie posts.'
+
+administer coterie_post entities:
+  title: 'Administer Coterie posts'
+  description: 'Full administrative rights to manage all Coterie posts.'
