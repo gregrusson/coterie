@@ -1,0 +1,35 @@
+coterie_relationship.follow_user:
+  path: '/user/{user}/follow'
+  defaults:
+    _controller: '\Drupal\coterie_relationship\Controller\RelationshipController::follow'
+    _title: 'Follow User'
+  requirements:
+    _permission: 'access content'
+    user: \d+
+
+coterie_relationship.unfollow_user:
+  path: '/user/{user}/unfollow'
+  defaults:
+    _controller: '\Drupal\coterie_relationship\Controller\RelationshipController::unfollow'
+    _title: 'Unfollow User'
+  requirements:
+    _permission: 'access content'
+    user: \d+
+
+coterie_relationship.user_followers:
+  path: '/user/{user}/followers'
+  defaults:
+    _controller: '\Drupal\coterie_relationship\Controller\RelationshipController::followersPage'
+    _title: 'Followers'
+  requirements:
+    _permission: 'access content'
+    user: \d+
+
+coterie_relationship.user_following:
+  path: '/user/{user}/following'
+  defaults:
+    _controller: '\Drupal\coterie_relationship\Controller\RelationshipController::followingPage'
+    _title: 'Following'
+  requirements:
+    _permission: 'access content'
+    user: \d+

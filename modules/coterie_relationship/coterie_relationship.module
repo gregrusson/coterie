@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * Stub for Coterie Relationships.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+
+/**
+ * Implements hook_help().
+ */
+function coterie_relationship_help($route_name, RouteMatchInterface $route_match) {
+    switch ($route_name) {
+        case 'help.page.coterie_relationship':
+            return '<p>' . t('Provides the Relationship entity and UI for Coterie.') . '</p>';
+    }
+}
+
+/**
+ * Implements hook_user_view().
+ */
+function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\EntityInterface $account, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+    // Only modify for actual user profiles, not system accounts.
+    if ($account->getEntityTypeId() !== 'user' || $view_mode !== 'full') {
+        return;
+    }
+
+    $current_user = \Drupal::currentUser();
+
+    // Don't show the button to anonymous users or to themselves.
+    if ($current_user->isAnonymous() || $current_user->id() == $account->id()) {
+        return;
+    }
+
+    // Use the RelationshipManager to check if already following.
+    $manager = \Drupal::service('coterie_relationship.manager');
+    $already_following = $manager->isFollower($current_user->id(), $account->id());
+
+    if ($already_following) {
+        $text = t('Unfollow');
+        $url = Url::fromRoute('coterie_relationship.unfollow_user', ['user' => $account->id()]);
+        $class = 'unfollow-action';
+    } else {
+        $text = t('Follow');
+        $url = Url::fromRoute('coterie_relationship.follow_user', ['user' => $account->id()]);
+        $class = 'follow-action';
+    }
+
+    $link = Link::fromTextAndUrl($text, $url)->toRenderable();
+    $link['#attributes']['class'][] = 'button';
+    $link['#attributes']['class'][] = $class;
+    $link['#attributes']['class'][] = $already_following ? 'is-following' : 'follow-action';
+
+    // Add it to the bottom of the profile.
+    $build['coterie_follow_button'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['follow-button-wrapper']],
+        'link' => $link,
+        '#weight' => 100,
+    ];
+
+    $follower_count = $manager->countFollowers($account->id());
+    $following_count = $manager->countFollowing($account->id());
+
+    $followers_url = Url::fromRoute('coterie_relationship.user_followers', ['user' => $account->id()]);
+    $following_url = Url::fromRoute('coterie_relationship.user_following', ['user' => $account->id()]);
+
+    $build['coterie_relationship_counts'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['relationship-counts']],
+        'counts' => [
+            '#markup' => '<strong>' .
+                         Link::fromTextAndUrl(t('@followers Followers', ['@followers' => $follower_count]), $followers_url)->toString() .
+                         '</strong> | <strong>' .
+                         Link::fromTextAndUrl(t('@following Following', ['@following' => $following_count]), $following_url)->toString() .
+                         '</strong>',
+        ],
+        '#weight' => 101,
+    ];
+}
