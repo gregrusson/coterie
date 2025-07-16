@@ -6,3 +6,12 @@ coterie_relationship.follow_user:
   requirements:
     _permission: 'access content'
     user: \d+
+
+coterie_relationship.unfollow_user:
+  path: '/user/{user}/unfollow'
+  defaults:
+    _controller: '\Drupal\coterie_relationship\Controller\RelationshipController::unfollow'
+    _title: 'Unfollow User'
+  requirements:
+    _permission: 'access content'
+    user: \d+

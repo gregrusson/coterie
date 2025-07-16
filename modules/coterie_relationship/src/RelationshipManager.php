@@ -44,6 +44,22 @@ class RelationshipManager {
     }
 
     /**
+     * Remove a relationship between users.
+     */
+    public function removeRelationship(string $type, int $source_uid, int $target_uid): void {
+        $storage = $this->entityTypeManager->getStorage('relationship');
+        $relationships = $storage->loadByProperties([
+                                                        'type' => $type,
+                                                        'source_user' => $source_uid,
+                                                        'target_user' => $target_uid,
+                                                    ]);
+
+        foreach ($relationships as $relationship) {
+            $relationship->delete();
+        }
+    }
+
+    /**
      * Get all users who follow the given user.
      */
     public function getFollowers(int $target_uid): array {

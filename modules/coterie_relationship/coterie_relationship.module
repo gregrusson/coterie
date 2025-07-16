@@ -39,11 +39,19 @@ function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\Entit
     $manager = \Drupal::service('coterie_relationship.manager');
     $already_following = $manager->isFollower($current_user->id(), $account->id());
 
-    $text = $already_following ? t('Following') : t('Follow');
-    $url = Url::fromRoute('coterie_relationship.follow_user', ['user' => $account->id()]);
+    if ($already_following) {
+        $text = t('Unfollow');
+        $url = Url::fromRoute('coterie_relationship.unfollow_user', ['user' => $account->id()]);
+        $class = 'unfollow-action';
+    } else {
+        $text = t('Follow');
+        $url = Url::fromRoute('coterie_relationship.follow_user', ['user' => $account->id()]);
+        $class = 'follow-action';
+    }
 
     $link = Link::fromTextAndUrl($text, $url)->toRenderable();
     $link['#attributes']['class'][] = 'button';
+    $link['#attributes']['class'][] = $class;
     $link['#attributes']['class'][] = $already_following ? 'is-following' : 'follow-action';
 
     // Add it to the bottom of the profile.
