@@ -1,5 +1,5 @@
 {
-  "name": "drupal/coterie_core",
+  "name": "drupal/coterie",
   "description": "Base functionality and shared services for all Coterie social modules",
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
