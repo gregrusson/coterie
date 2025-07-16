@@ -1,0 +1,4 @@
+services:
+  coterie_relationship.manager:
+    class: Drupal\coterie_relationship\RelationshipManager
+    arguments: ['@entity_type.manager']
