@@ -1,0 +1,73 @@
+<?php
+
+/**
+ * @file
+ * Stub for Coterie Post.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\node\NodeInterface;
+use Drupal\node\NodeAccessResponse;
+
+/**
+ * Implements hook_help().
+ */
+function coterie_post_help($route_name, RouteMatchInterface $route_match) {
+    switch ($route_name) {
+        case 'help.page.coterie_post':
+            return '<p>' . t('Provides the Post entity and UI for Coterie.') . '</p>';
+    }
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function coterie_post_node_access(NodeInterface $node, $operation, AccountInterface $account) {
+    if ($node->getType() !== 'coterie_post') {
+        return NodeAccessResponse::neutral();
+    }
+
+    if ($operation === 'create') {
+        return $account->hasPermission('create coterie posts')
+            ? NodeAccessResponse::allow()
+            : NodeAccessResponse::forbidden();
+    }
+
+    // Existing view logic...
+    if ($operation === 'view') {
+        if ($node->getOwnerId() === $account->id()) {
+            return NodeAccessResponse::allow();
+        }
+
+        $visibility = $node->get('field_visibility')->value;
+
+        switch ($visibility) {
+            case 'public':
+                return NodeAccessResponse::allow();
+
+            case 'private':
+                return NodeAccessResponse::forbidden();
+
+            case 'followers':
+                return _coterie_post_user_is_follower($account->id(), $node->getOwnerId())
+                    ? NodeAccessResponse::allow()
+                    : NodeAccessResponse::forbidden();
+        }
+
+        return NodeAccessResponse::forbidden();
+    }
+
+    return NodeAccessResponse::neutral();
+}
+
+/**
+ * Placeholder function to determine if one user is a follower of another.
+ *
+ * Replace this with real logic or a service.
+ */
+function _coterie_post_user_is_follower($viewer_uid, $author_uid) {
+    // TODO: Connect this with your relationship/following system.
+    // For now, allow access to simulate follower behavior.
+    return FALSE; // Change to TRUE for testing.
+}

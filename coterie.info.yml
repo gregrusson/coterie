@@ -1,6 +1,7 @@
-name: 'Coterie: Core'
+name: 'Coterie'
 type: module
 description: 'Core services, interfaces, and utilities for the Coterie social ecosystem.'
 core_version_requirement: ^11
 package: Coterie
+
 # no dependencies here; sub-modules will depend on “coterie”
