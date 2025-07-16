@@ -1,0 +1,9 @@
+services:
+  coterie.relationship.manager:
+    class: Drupal\coterie\RelationshipManager
+    arguments: ['@entity_type.manager', '@current_user']
+
+  coterie.event_subscriber:
+    class: Drupal\coterie\Event\CoterieSubscriber
+    tags:
+      - { name: event_subscriber }

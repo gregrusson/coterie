@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Core hooks and bootstrap for Coterie.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function coterie_help($route_name, RouteMatchInterface $route_match) {
+    switch ($route_name) {
+        case 'help.page.coterie':
+            return '<p>' . t('Provides core functionality for the Coterie social site.') . '</p>';
+    }
+}
