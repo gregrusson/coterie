@@ -16,3 +16,18 @@ function coterie_relationship_help($route_name, RouteMatchInterface $route_match
             return '<p>' . t('Provides the Relationship entity and UI for Coterie.') . '</p>';
     }
 }
+
+/**
+ * Implements hook_user_view().
+ */
+function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+    if ($entity->getEntityTypeId() === 'user' && \Drupal::currentUser()->id() !== $entity->id()) {
+        $url = \Drupal\Core\Url::fromRoute('coterie_relationship.follow_user', ['user' => $entity->id()]);
+        $build['follow_link'] = [
+            '#type' => 'link',
+            '#title' => $entity->get('field_visibility')->value === 'followers' ? 'Request Follow' : 'Follow',
+            '#url' => $url,
+            '#attributes' => ['class' => ['button', 'button--follow']],
+        ];
+    }
+}

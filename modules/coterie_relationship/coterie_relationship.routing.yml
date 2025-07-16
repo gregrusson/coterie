@@ -1,0 +1,8 @@
+coterie_relationship.follow_user:
+  path: '/user/{user}/follow'
+  defaults:
+    _controller: '\Drupal\coterie_relationship\Controller\RelationshipController::follow'
+    _title: 'Follow User'
+  requirements:
+    _permission: 'access content'
+    user: \d+

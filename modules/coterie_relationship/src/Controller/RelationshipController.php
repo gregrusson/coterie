@@ -1,0 +1,37 @@
+<?php
+
+namespace Drupal\coterie_relationship\Controller;
+
+use Drupal\Core\Controller\ControllerBase;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\user\Entity\User;
+
+/**
+ * Handles follow actions.
+ */
+class RelationshipController extends ControllerBase {
+
+    public function follow($user) {
+        $current_user = $this->currentUser();
+        $target_user = User::load($user);
+
+        if (!$target_user || $current_user->id() == $target_user->id()) {
+            $this->messenger()->addError('You cannot follow this user.');
+            return new RedirectResponse('/user/' . $user);
+        }
+
+        /** @var \Drupal\coterie_relationship\RelationshipManager $manager */
+        $manager = \Drupal::service('coterie_relationship.manager');
+
+        if ($manager->isFollower($current_user->id(), $target_user->id())) {
+            $this->messenger()->addWarning('You are already following this user.');
+        }
+        else {
+            $manager->createRelationship('follower', $current_user->id(), $target_user->id());
+            $this->messenger()->addStatus('You are now following this user.');
+        }
+
+        return new RedirectResponse('/user/' . $user);
+    }
+
+}

@@ -61,13 +61,8 @@ function coterie_post_node_access(NodeInterface $node, $operation, AccountInterf
     return NodeAccessResponse::neutral();
 }
 
-/**
- * Placeholder function to determine if one user is a follower of another.
- *
- * Replace this with real logic or a service.
- */
 function _coterie_post_user_is_follower($viewer_uid, $author_uid) {
-    // TODO: Connect this with your relationship/following system.
-    // For now, allow access to simulate follower behavior.
-    return FALSE; // Change to TRUE for testing.
+    /** @var \Drupal\coterie_relationship\RelationshipManager $manager */
+    $manager = \Drupal::service('coterie_relationship.manager');
+    return $manager->isFollower($viewer_uid, $author_uid);
 }
