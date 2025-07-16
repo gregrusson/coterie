@@ -1,5 +1,0 @@
-coterie_post.add:
-  title: 'Add Coterie post'
-  route_name: entity.coterie_post.add_form
-  base_route: coterie_post.collection
-  weight: 0

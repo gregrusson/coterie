@@ -1,70 +1,48 @@
 <?php
 
-/**
- * @file
- * Install, update and schema hooks for Coterie Post.
- */
+use Drupal\node\Entity\NodeType;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
 
 /**
- * Implements hook_schema().
+ * Implements hook_install().
  */
-function coterie_post_schema() {
-  $schema['coterie_post'] = [
-    'description' => 'Stores Coterie posts.',
-    'fields' => [
-      'id' => [
-        'description' => 'Primary key: Unique post ID.',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ],
-      'uuid' => [
-        'description' => 'Universal unique identifier.',
-        'type' => 'varchar',
-        'length' => 128,
-        'not null' => TRUE,
-      ],
-      'title' => [
-        'description' => 'Post title.',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ],
-      'body' => [
-        'description' => 'Long text body.',
-        'type' => 'text',
-        'size' => 'big',
-        'not null' => FALSE,
-      ],
-      'author_id' => [
-        'description' => 'UID of author.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-      ],
-      'created' => [
-        'description' => 'Timestamp when created.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ],
-      'changed' => [
-        'description' => 'Timestamp when last changed.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ],
-    ],
-    'primary key' => ['id'],
-    'unique keys' => [
-      'uuid' => ['uuid'],
-    ],
-    'indexes' => [
-      'author_id' => ['author_id'],
-    ],
-  ];
+function coterie_post_install() {
+  // Create the content type.
+  if (!NodeType::load('coterie_post')) {
+    $type = NodeType::create([
+      'type' => 'coterie_post',
+      'name' => 'Post',
+      'description' => 'A post shared within a user’s coterie.',
+    ]);
+    $type->save();
+  }
 
-  return $schema;
+  // Create field storage for 'visibility' if it doesn't exist.
+  if (!FieldStorageConfig::loadByName('node', 'field_visibility')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_visibility',
+      'entity_type' => 'node',
+      'type' => 'list_string',
+      'settings' => [
+        'allowed_values' => [
+          'public' => 'Public',
+          'followers' => 'Followers Only',
+          'private' => 'Private',
+        ],
+      ],
+    ])->save();
+  }
+
+  // Attach field to the content type.
+  if (!FieldConfig::loadByName('node', 'coterie_post', 'field_visibility')) {
+    FieldConfig::create([
+      'field_name' => 'field_visibility',
+      'entity_type' => 'node',
+      'bundle' => 'coterie_post',
+      'label' => 'Visibility',
+      'required' => TRUE,
+      'settings' => [],
+    ])->save();
+  }
 }

@@ -4,4 +4,4 @@ description: 'Allows users to create and manage Posts.'
 core_version_requirement: ^11
 package: Coterie
 dependencies:
-  - coterie_core
+  - coterie:coterie
