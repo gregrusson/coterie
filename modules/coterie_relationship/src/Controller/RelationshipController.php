@@ -29,6 +29,11 @@ class RelationshipController extends ControllerBase {
         else {
             $manager->createRelationship('follower', $current_user->id(), $target_user->id());
             $this->messenger()->addStatus('You are now following this user.');
+
+            $this->logger('coterie_relationship')->notice('User @uid followed user @target.', [
+                '@uid' => $current_user->id(),
+                '@target' => $target_user->id(),
+            ]);
         }
 
         return new RedirectResponse('/user/' . $user);
@@ -51,6 +56,11 @@ class RelationshipController extends ControllerBase {
         else {
             $manager->removeRelationship('follower', $current_user->id(), $target_user->id());
             $this->messenger()->addStatus('You have unfollowed this user.');
+
+            $this->logger('coterie_relationship')->notice('User @uid unfollowed user @target.', [
+                '@uid' => $current_user->id(),
+                '@target' => $target_user->id(),
+            ]);
         }
 
         return new RedirectResponse('/user/' . $user);
