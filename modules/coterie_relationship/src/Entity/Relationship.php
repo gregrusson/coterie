@@ -1,7 +1,6 @@
 <?php
 
-
-namespace Drupal\coterie_relationships\Entity;
+namespace Drupal\coterie_relationship\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -13,8 +12,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *
  * @ContentEntityType(
  *   id = "relationship",
- *   label = @Translation("User Relationship"),
- *   base_table = "user_relationship",
+ *   label = @Translation("Coterie Relationship"),
+ *   base_table = "coterie_relationship",
  *   entity_keys = {
  *     "id" = "id",
  *     "uuid" = "uuid",
