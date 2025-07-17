@@ -1,0 +1,45 @@
+<?php
+
+use Drupal\node\Entity\Node;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_node_access().
+ */
+function coterie_visibility_node_access(NodeInterface $node, $op, AccountInterface $account)
+{
+    if ($op !== 'view') {
+        return AccessResult::neutral();
+    }
+
+    // Check if this node has a visibility field.
+    if (!$node->hasField('field_coterie_visibility') || $node->get('field_coterie_visibility')->isEmpty()) {
+        return AccessResult::neutral();
+    }
+
+    $visibility = $node->get('field_coterie_visibility')->value ?? 'public';
+
+    switch ($visibility) {
+        case 'public':
+            return AccessResult::allowed();
+
+        case 'members':
+            return AccessResult::allowedIf($account->isAuthenticated());
+
+        case 'private':
+            return AccessResult::allowedIf($account->id() === $node->getOwnerId());
+
+        case 'followers':
+            if (!$account->isAuthenticated()) {
+                return AccessResult::forbidden();
+            }
+            /** @var \Drupal\coterie_relationship\RelationshipManager $manager */
+            $manager     = \Drupal::service('coterie_relationship.relationship_manager');
+            $isFollowing = $manager->isFollower($account->id(), $node->getOwnerId());
+            return AccessResult::allowedIf($isFollowing)->addCacheableDependency($node);
+    }
+
+    return AccessResult::neutral();
+}

@@ -1,0 +1,8 @@
+name: Coterie Visibility
+type: module
+description: 'Adds node visibility levels: public, members, followers, private.'
+core_version_requirement: ^11
+package: Coterie
+dependencies:
+  - node
+  - user
