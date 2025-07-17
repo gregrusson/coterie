@@ -1,0 +1,54 @@
+<?php
+
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+
+/**
+ * Implements hook_install().
+ */
+function coterie_visibility_install() {
+  $field_name = 'field_coterie_visibility';
+
+  // 1. Create field storage (once, shared across bundles).
+  if (!FieldStorageConfig::loadByName('node', $field_name)) {
+    FieldStorageConfig::create([
+      'field_name' => $field_name,
+      'entity_type' => 'node',
+      'type' => 'list_string',
+      'cardinality' => 1,
+      'settings' => [
+        'allowed_values' => [
+          'public' => 'Public',
+          'members' => 'Members only',
+          'followers' => 'Followers only',
+          'private' => 'Just me',
+        ],
+      ],
+      'default_value' => [['value' => 'members']],
+    ])->save();
+  }
+
+  // 2. Attach field to selected bundles.
+  $target_bundles = ['coterie_post']; // Add your desired bundles here.
+
+  foreach ($target_bundles as $bundle) {
+    if (!FieldConfig::loadByName('node', $bundle, $field_name)) {
+      FieldConfig::create([
+        'field_name' => $field_name,
+        'entity_type' => 'node',
+        'bundle' => $bundle,
+        'label' => 'Visibility',
+        'required' => TRUE,
+        'settings' => [
+          'allowed_values' => [
+            'public' => 'Public',
+            'members' => 'Members only',
+            'followers' => 'Followers only',
+            'private' => 'Just me',
+          ],
+        ],
+        'default_value' => [['value' => 'members']],
+      ])->save();
+    }
+  }
+}
