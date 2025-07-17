@@ -30,37 +30,35 @@ function coterie_relationship_user_view(array &$build, \Drupal\Core\Entity\Entit
 
     $current_user = \Drupal::currentUser();
 
-    // Don't show the button to anonymous users or to themselves.
-    if ($current_user->isAnonymous() || $current_user->id() == $account->id()) {
-        return;
-    }
-
     // Use the RelationshipManager to check if already following.
     $manager = \Drupal::service('coterie_relationship.manager');
     $already_following = $manager->isFollower($current_user->id(), $account->id());
 
-    if ($already_following) {
-        $text = t('Unfollow');
-        $url = Url::fromRoute('coterie_relationship.unfollow_user', ['user' => $account->id()]);
-        $class = 'unfollow-action';
-    } else {
-        $text = t('Follow');
-        $url = Url::fromRoute('coterie_relationship.follow_user', ['user' => $account->id()]);
-        $class = 'follow-action';
+    // Don't show the button to anonymous users or to themselves.
+    if (!$current_user->isAnonymous() && $current_user->id() !== $account->id()) {
+        if ($already_following) {
+            $text = t('Unfollow');
+            $url = Url::fromRoute('coterie_relationship.unfollow_user', ['user' => $account->id()]);
+            $class = 'unfollow-action btn-danger';
+        } else {
+            $text = t('Follow');
+            $url = Url::fromRoute('coterie_relationship.follow_user', ['user' => $account->id()]);
+            $class = 'follow-action btn-success';
+        }
+
+        $link = Link::fromTextAndUrl($text, $url)->toRenderable();
+        $link['#attributes']['class'][] = 'btn';
+        $link['#attributes']['class'][] = $class;
+        $link['#attributes']['class'][] = $already_following ? 'is-following' : 'follow-action';
+
+        // Add it to the bottom of the profile.
+        $build['coterie_follow_button'] = [
+            '#type' => 'container',
+            '#attributes' => ['class' => ['follow-button-wrapper']],
+            'link' => $link,
+            '#weight' => 100,
+        ];
     }
-
-    $link = Link::fromTextAndUrl($text, $url)->toRenderable();
-    $link['#attributes']['class'][] = 'button';
-    $link['#attributes']['class'][] = $class;
-    $link['#attributes']['class'][] = $already_following ? 'is-following' : 'follow-action';
-
-    // Add it to the bottom of the profile.
-    $build['coterie_follow_button'] = [
-        '#type' => 'container',
-        '#attributes' => ['class' => ['follow-button-wrapper']],
-        'link' => $link,
-        '#weight' => 100,
-    ];
 
     $follower_count = $manager->countFollowers($account->id());
     $following_count = $manager->countFollowing($account->id());
