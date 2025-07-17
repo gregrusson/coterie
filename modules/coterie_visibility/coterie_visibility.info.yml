@@ -6,3 +6,5 @@ package: Coterie
 dependencies:
   - node
   - user
+files:
+  - coterie_visibility.views.inc
