@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\profile\Entity\Profile;
+use Drupal\comment\Entity\Comment;
 
 /**
  * Implements hook_help().
@@ -14,5 +16,58 @@ function coterie_help($route_name, RouteMatchInterface $route_match) {
     switch ($route_name) {
         case 'help.page.coterie':
             return '<p>' . t('Provides core functionality for the Coterie social site.') . '</p>';
+    }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function coterie_preprocess_node(array &$variables) {
+    $node = $variables['node'];
+
+    // Only run this on full nodes or view modes where needed
+    if ($node->getOwnerId()) {
+        $account = $node->getOwner();
+
+        // Load the user's 'user_profile' profile
+        $profiles = \Drupal::entityTypeManager()->getStorage('profile')->loadByProperties([
+                                                                                              'uid' => $account->id(),
+                                                                                              'type' => 'user_profile',
+                                                                                          ]);
+
+        $first_name = '';
+        $last_name = '';
+        $initials = '';
+        $profile_image = NULL;
+
+        if (!empty($profiles)) {
+            $profile = reset($profiles);
+
+            $first_name = $profile->get('field_first_name')->value ?? '';
+            $last_name = $profile->get('field_last_name')->value ?? '';
+
+            // Profile image
+            if (!$profile->get('field_profile_image')->isEmpty()) {
+                $profile_image = $profile->get('field_profile_image')->view('thumbnail');
+            }
+
+            // Profile link
+            $variables['profile_url'] = $profile->toUrl()->toString();
+        }
+
+        // Fallback to username if both first and last names are missing
+        if (empty($first_name) && empty($last_name)) {
+            $display_name = $account->getDisplayName();
+            $initials = strtoupper(substr($display_name, 0, 2));
+        }
+        else {
+            $display_name = trim("$first_name $last_name");
+            $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1));
+        }
+
+        // Pass variables to Twig
+        $variables['profile_display_name'] = $display_name;
+        $variables['profile_initials'] = $initials;
+        $variables['profile_image'] = $profile_image;
     }
 }
