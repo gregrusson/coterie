@@ -9,7 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\profile\Entity\Profile;
 use Drupal\comment\Entity\Comment;
 use Drupal\Component\Datetime\Time;
-
+use Drupal\flag\Entity\Flagging;
 /**
  * Implements hook_help().
  */
@@ -79,6 +79,21 @@ function coterie_preprocess_node(array &$variables) {
         // Format as time ago
         $variables['created_time_ago'] = $date_formatter->formatTimeDiffSince($timestamp);
     }
+
+    if ($variables['node']->bundle() === 'coterie_post') {
+        $variables['like_count'] = get_likes_count($variables['node']);
+    }
 }
 
+/**
+ * Get number of likes on a node.
+ */
+function get_likes_count($node) {
+    $query = \Drupal::entityTypeManager()->getStorage('flagging')->getQuery();
+    $query->accessCheck(TRUE)
+          ->condition('flag_id', 'coterie_post_like')
+          ->condition('entity_id', $node->id())
+          ->condition('entity_type', 'node');
 
+    return $query->count()->execute();
+}

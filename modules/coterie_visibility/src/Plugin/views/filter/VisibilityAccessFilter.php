@@ -44,9 +44,9 @@ class VisibilityAccessFilter extends FilterPluginBase {
             }
         }
 
-        \Drupal::logger('coterie_visibility')->debug('Loaded node IDs: @nids', [
-            '@nids' => implode(', ', $viewable_nids),
-        ]);
+//        \Drupal::logger('coterie_visibility')->debug('Loaded node IDs: @nids', [
+//            '@nids' => implode(', ', $viewable_nids),
+//        ]);
 
         if (empty($viewable_nids)) {
             $viewable_nids = [0]; // Force no results
