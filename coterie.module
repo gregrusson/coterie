@@ -8,6 +8,7 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\profile\Entity\Profile;
 use Drupal\comment\Entity\Comment;
+use Drupal\Component\Datetime\Time;
 
 /**
  * Implements hook_help().
@@ -31,20 +32,20 @@ function coterie_preprocess_node(array &$variables) {
 
         // Load the user's 'user_profile' profile
         $profiles = \Drupal::entityTypeManager()->getStorage('profile')->loadByProperties([
-                                                                                              'uid' => $account->id(),
+                                                                                              'uid'  => $account->id(),
                                                                                               'type' => 'user_profile',
                                                                                           ]);
 
-        $first_name = '';
-        $last_name = '';
-        $initials = '';
+        $first_name    = '';
+        $last_name     = '';
+        $initials      = '';
         $profile_image = NULL;
 
         if (!empty($profiles)) {
             $profile = reset($profiles);
 
             $first_name = $profile->get('field_first_name')->value ?? '';
-            $last_name = $profile->get('field_last_name')->value ?? '';
+            $last_name  = $profile->get('field_last_name')->value ?? '';
 
             // Profile image
             if (!$profile->get('field_profile_image')->isEmpty()) {
@@ -58,16 +59,26 @@ function coterie_preprocess_node(array &$variables) {
         // Fallback to username if both first and last names are missing
         if (empty($first_name) && empty($last_name)) {
             $display_name = $account->getDisplayName();
-            $initials = strtoupper(substr($display_name, 0, 2));
-        }
-        else {
+            $initials     = strtoupper(substr($display_name, 0, 2));
+        } else {
             $display_name = trim("$first_name $last_name");
-            $initials = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1));
+            $initials     = strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1));
         }
 
         // Pass variables to Twig
         $variables['profile_display_name'] = $display_name;
-        $variables['profile_initials'] = $initials;
-        $variables['profile_image'] = $profile_image;
+        $variables['profile_initials']     = $initials;
+        $variables['profile_image']        = $profile_image;
+
+        /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
+        $date_formatter = \Drupal::service('date.formatter');
+
+        // Get the created timestamp directly (no strtotime!)
+        $timestamp = $node->getCreatedTime();
+
+        // Format as time ago
+        $variables['created_time_ago'] = $date_formatter->formatTimeDiffSince($timestamp);
     }
 }
+
+
